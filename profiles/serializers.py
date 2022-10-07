@@ -9,13 +9,9 @@ class ProfileSerializer(serializers.Serializer):  # noqa
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
     bio = serializers.CharField(required=False)
-    phone = serializers.CharField(required=False,
-                                  validators=[
-                                      RegexValidator(
-                                          r'\d{11}', 'Minimum 11', code='invalid'
-                                      )
-                                  ]
-                                  )
+    phone = serializers.CharField(
+        required=False, validators=[RegexValidator(r'\d{11}', 'Minimum 11', code='invalid')]
+    )
     balance = serializers.IntegerField(read_only=True)
     person_disc = serializers.IntegerField(read_only=True)
 

@@ -1,10 +1,8 @@
 from django.contrib.auth.models import UserManager as BaseUserManager
 
 
-# WATCH OUT IMPORT
 class UserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
-
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
 
@@ -14,7 +12,6 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email=None, password=None, **extra_fields):
-
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
@@ -27,7 +24,6 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, **extra_fields)
 
     def create_user(self, email=None, password=None, **extra_fields):
-
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
 

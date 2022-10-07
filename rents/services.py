@@ -1,8 +1,3 @@
-from django.db.transaction import atomic
-
-from profiles.models import Profile
-
-
 class RentService:
 
     def list(self, user_pk, model, *args, **kwargs):

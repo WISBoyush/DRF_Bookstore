@@ -2,9 +2,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from carts.models import Purchase
-from orders.serializers import OrderOuterSerializer
-from orders.services import OrderService
 from rents.models import Rent
 from rents.serializers import RentOuterSerializer
 from rents.services import RentService

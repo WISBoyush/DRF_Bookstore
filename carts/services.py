@@ -17,25 +17,6 @@ class CartsService:
         self.model = model
         super().__init__(*args, **kwargs)
 
-    def create_or_update(self, data, *args, **kwargs):
-        serializer = CartInnerSerializer(data=data)
-        if not serializer.is_valid():
-            return Response(status=400, data='Fuck off')
-        data = serializer.data
-
-        item_in_cart, is_created = Purchase.objects.get_or_create(
-            state='CART',
-            item_id=data['item_id'],
-            user_id=self.user,
-            warranty_days=14
-        )
-        if is_created:
-            item_in_cart.amount = data['amount']
-        else:
-            item_in_cart.amount += data['amount']
-        item_in_cart.save()
-
-        return item_in_cart
 
     def list(self):
         queryset = self.model.objects.filter(user_id=self.user, state='CART').order_by('id').values()

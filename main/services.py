@@ -66,8 +66,6 @@ class GoodsService(ItemsServiceMixin):
             raise ValueError
         model = self.get_model_name_from_ct(content_type)
         serializer = self.get_dynamic_serializer(model)
-        # created_item = model.objects.create(
-        #     **request.data
-        # )
+
 
         return serializer

@@ -8,21 +8,6 @@ from .services import GoodsService, ItemsService
 
 class BaseViewSet(viewsets.ModelViewSet):
 
-    # def get_model_for_detail_action(self):
-    #     items_instance = Item.objects.get(pk=self.kwargs.get('pk'))
-    #     return {
-    #         'instance': items_instance,
-    #         'model': ContentType.objects.get(id=items_instance.content_type_id).model_class(),
-    #     }
-
-    # def get_model_for_common_action(self):
-    #     choosen_category = self.request.query_params.get('category')
-    #     allowed_categories = ['book', 'figure']
-    #     if choosen_category not in allowed_categories:
-    #         return get_4xx_or_error_message_json(404, "Неправильная категория")
-    #     model = ContentType.objects.get(model=choosen_category).model_class()
-    #     return model
-
     def get_dynamic_serializer(self, model):
         return type(
             'DynamicItemSerializer',

@@ -1,5 +1,4 @@
 from django.db import models, transaction
-from django.db.models import Count
 
 
 class RentManager(models.Manager):
