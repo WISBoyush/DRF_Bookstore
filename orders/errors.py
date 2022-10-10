@@ -1,6 +1,10 @@
-class LackOfMoneyError(Exception):
+class OrdersError(Exception):
     pass
 
 
-class AlreadyPaidError(Exception):
+class LackOfMoneyError(OrdersError):
+    pass
+
+
+class AlreadyPaidError(OrdersError):
     pass

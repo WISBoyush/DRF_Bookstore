@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.serializers import ListSerializer
 
 
 class RentItemSerializer(serializers.Serializer):
@@ -15,4 +16,4 @@ class RentItemSerializer(serializers.Serializer):
 
 class RentSerializer(serializers.Serializer):
     orders_id = serializers.CharField(read_only=True)
-    orders = RentItemSerializer(many=True)
+    orders = ListSerializer(child=RentItemSerializer())

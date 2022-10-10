@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from carts.models import Purchase
-from orders import errors
+from orders.errors import OrdersError
 from orders.serializers import OrderOuterSerializer
 from orders.services import OrderService
 
@@ -45,7 +45,7 @@ class OrderViewSet(BaseOrderViewSet):
             return Response(status=404, data='Not Found')
         try:
             service.pay(self.request.user.pk, orders_id, self.model)
-        except (errors.AlreadyPaidError, errors.LackOfMoneyError) as e:
+        except (OrdersError) as e:
             return Response(status=400, data={'message': f'{e}'})
 
         return Response(status=200, data="Order was successfully created")

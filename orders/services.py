@@ -1,8 +1,7 @@
 from django.db.transaction import atomic
 
+from .errors import LackOfMoneyError, AlreadyPaidError
 from profiles.models import Profile
-
-from orders import errors
 
 
 class OrderService:
@@ -10,12 +9,15 @@ class OrderService:
     def list(self, user_pk, model, *args, **kwargs):
         users_orders = model.objects.filter(
             user_id=user_pk,
-            state__in=['AWAITING_ARRIVAL',
-                       'AWAITING_PAYMENT',
-                       'PAID',
-                       'AWAITING_DELIVERY',
-                       'SENT',
-                       'FINISHED'])
+            state__in=[
+                'AWAITING_ARRIVAL',
+                'AWAITING_PAYMENT',
+                'PAID',
+                'AWAITING_DELIVERY',
+                'SENT',
+                'FINISHED'
+            ]
+        )
         data_to_serialize = []
         orders_ids = list((users_orders.values('orders_id').distinct('orders_id')))
         for orders_id in orders_ids:

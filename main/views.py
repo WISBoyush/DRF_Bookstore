@@ -1,4 +1,6 @@
-from rest_framework import viewsets
+import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets, filters
 from rest_framework.response import Response
 
 from .models import Item, Figure, Book
@@ -11,7 +13,7 @@ class BaseViewSet(viewsets.ModelViewSet):
     def get_dynamic_serializer(self, model):
         return type(
             'DynamicItemSerializer',
-            (BaseDynamicSerializer, ),
+            (BaseDynamicSerializer,),
             {'Meta': type('Meta', (), {
                 'model': model,
                 'fields': '__all__',
@@ -26,14 +28,20 @@ class ItemViewSet(BaseViewSet):
     serializer_class = ItemSerializer
     model = Item
     http_method_names = ['get']
+    filter_backends = [
+        filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter
+    ]
+    filterset_fields = ['title', 'price']
+    search_fields = ['title', 'description']
+    # ordering_fields = ['title', 'price']
 
     def retrieve(self, request, *args, **kwargs):
         service = ItemsService()
         return service.retrieve(request, *args, **kwargs)
 
-    def list(self, request, *args, **kwargs):
-        service = ItemsService()
-        return service.list(request, *args, **kwargs)
+    # def list(self, request, *args, **kwargs):
+    #     service = ItemsService()
+    #     return service.list(request, *args, **kwargs)
 
 
 class BaseItemActionsViewSet(ItemViewSet):

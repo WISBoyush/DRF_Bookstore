@@ -41,14 +41,14 @@ class ItemsService(ItemsServiceMixin):
     def get_queryset(self):
         return Item.objects.all()
 
-    def list(self, request, *args, **kwargs):
-        params = request.query_params.dict()
-        print(params)
-        for key, value in params.items():
-            params[key] = int(value) if value.isdigit() else value
-        if params:
-            return Response(status=200, data=ItemSerializer(Item.objects.filter(**params), many=True).data)
-        return Response(status=200, data=ItemSerializer(Item.objects.all(), many=True).data)
+    # def list(self, request, *args, **kwargs):
+    #     params = request.query_params.dict()
+    #
+    #     for key, value in params.items():
+    #         params[key] = int(value) if value.isdigit() else value
+    #     if params:
+    #         return Response(status=200, data=ItemSerializer(Item.objects.filter(**params), many=True).data)
+    #     return Response(status=200, data=ItemSerializer(Item.objects.all(), many=True).data)
 
 
 class GoodsService(ItemsServiceMixin):

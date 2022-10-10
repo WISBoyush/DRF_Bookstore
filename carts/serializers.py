@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.serializers import ListSerializer
 
 
 class CartItemSerializer(serializers.Serializer):
@@ -20,4 +21,4 @@ class CartItemSerializer(serializers.Serializer):
 class CartSerializer(serializers.Serializer):
     total = serializers.IntegerField(read_only=False)
     persons_discounted_price = serializers.IntegerField(read_only=False)
-    products = CartItemSerializer(many=True)
+    products = ListSerializer(child=CartItemSerializer())
