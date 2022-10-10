@@ -9,7 +9,7 @@ class ItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class BaseDynamicItemSerializer(serializers.ModelSerializer):
+class BaseDynamicSerializer(serializers.ModelSerializer):
     pass
 
 

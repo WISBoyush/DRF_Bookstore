@@ -19,11 +19,11 @@ class CartViewSet(BaseViewSet):
     model = Purchase
     http_method_names = ['patch', 'get', 'post', 'delete']
 
-    @action(detail=False, methods=['patch'], url_path='create_or_update')
-    def create_or_update(self, request, *args, **kwargs):
-        service = CartsService(self.request.user.pk, self.model)
-        datas = service.create_or_update(data=self.request.data, *args, **kwargs)
-        return Response(status=200, data=CartInnerSerializer(datas).data)
+    # @action(detail=False, methods=['patch'], url_path='create_or_update')
+    # def create_or_update(self, request, *args, **kwargs):
+    #     service = CartsService(self.request.user.pk, self.model)
+    #     datas = service.create_or_update(data=self.request.data, *args, **kwargs)
+    #     return Response(status=200, data=CartInnerSerializer(datas).data)
 
     @action(detail=False, methods=['patch'], url_path='cart_update')
     def cart_update(self, request, *args, **kwargs):

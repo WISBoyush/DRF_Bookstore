@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 from main.models import Item
-from main.serializers import BaseDynamicItemSerializer, ItemSerializer
+from main.serializers import ItemSerializer, BaseDynamicSerializer
 from main.utils import get_4xx_or_error_message_json
 
 
@@ -11,7 +11,7 @@ class ItemsServiceMixin:
     def get_dynamic_serializer(self, model):
         return type(
             'DynamicItemSerializer',
-            (BaseDynamicItemSerializer,),
+            (BaseDynamicSerializer, ),
             {'Meta': type('Meta', (), {
                 'model': model,
                 'fields': '__all__',

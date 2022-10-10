@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .models import Item, Figure, Book
-from .serializers import ItemSerializer, BaseDynamicItemSerializer, BookSerializer, FigureSerializer
+from .serializers import ItemSerializer, BookSerializer, FigureSerializer, BaseDynamicSerializer
 from .services import GoodsService, ItemsService
 
 
@@ -11,7 +11,7 @@ class BaseViewSet(viewsets.ModelViewSet):
     def get_dynamic_serializer(self, model):
         return type(
             'DynamicItemSerializer',
-            (BaseDynamicItemSerializer,),
+            (BaseDynamicSerializer, ),
             {'Meta': type('Meta', (), {
                 'model': model,
                 'fields': '__all__',
