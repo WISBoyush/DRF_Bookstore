@@ -3,9 +3,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from carts.models import Purchase
-from carts.serializers import CartOuterSerializer, CartInnerSerializer
+from carts.serializers import CartSerializer, CartItemSerializer
 from rents.models import Rent
-from rents.serializers import RentOuterSerializer, RentInnerSerializer
+from rents.serializers import RentSerializer, RentItemSerializer
 from .services import CartsService, RentCartsService
 
 
@@ -15,21 +15,15 @@ class BaseViewSet(viewsets.ModelViewSet):
 
 
 class CartViewSet(BaseViewSet):
-    serializer_class = CartOuterSerializer
+    serializer_class = CartSerializer
     model = Purchase
     http_method_names = ['patch', 'get', 'post', 'delete']
-
-    # @action(detail=False, methods=['patch'], url_path='create_or_update')
-    # def create_or_update(self, request, *args, **kwargs):
-    #     service = CartsService(self.request.user.pk, self.model)
-    #     datas = service.create_or_update(data=self.request.data, *args, **kwargs)
-    #     return Response(status=200, data=CartInnerSerializer(datas).data)
 
     @action(detail=False, methods=['patch'], url_path='cart_update')
     def cart_update(self, request, *args, **kwargs):
         service = CartsService(self.request.user.pk, self.model)
         datas = service.cart_update(data=self.request.data, user=self.request.user.pk, *args, **kwargs)
-        return Response(status=200, data=CartInnerSerializer(datas, many=True).data)
+        return Response(status=200, data=CartItemSerializer(datas, many=True).data)
 
     def list(self, request, *args, **kwargs):
         service = CartsService(self.request.user.pk, self.model)
@@ -53,7 +47,7 @@ class CartViewSet(BaseViewSet):
 
 
 class RentCartViewSet(BaseViewSet):
-    serializer_class = RentInnerSerializer
+    serializer_class = RentItemSerializer
     model = Rent
     http_method_names = ['patch', 'get', 'post', 'delete']
 
@@ -67,7 +61,7 @@ class RentCartViewSet(BaseViewSet):
     def create_entry(self, request, *args, **kwargs):
         service = RentCartsService(self.request.user.pk, self.model)
         datas = service.create(data=self.request.data, *args, **kwargs)
-        return Response(status=200, data=RentInnerSerializer(datas).data)
+        return Response(status=200, data=RentItemSerializer(datas).data)
 
     @action(detail=False, methods=['post'], url_path='make_order')
     def make_order(self, request, *args, **kwargs):
@@ -75,5 +69,5 @@ class RentCartViewSet(BaseViewSet):
         returned_data = service.make_order(self.request.data)
         if not returned_data['orders']:
             return Response(status=403, data="There is not any goods in your cart")
-        serialized_datas = RentOuterSerializer(returned_data, many=False).data
+        serialized_datas = RentSerializer(returned_data, many=False).data
         return Response(status=200, data=serialized_datas)

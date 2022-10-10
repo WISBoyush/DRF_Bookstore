@@ -2,6 +2,8 @@ from django.db.transaction import atomic
 
 from profiles.models import Profile
 
+from orders import errors
+
 
 class OrderService:
 
@@ -33,21 +35,18 @@ class OrderService:
         users_orders = model.objects.filter(
             orders_id=orders_id, state='AWAITING_PAYMENT')
         if not users_orders.exists():
-            text = 'This order has already been paid'
-            return text
+            raise errors.AlreadyPaidError("This order already has been paid")
 
         users_profile = Profile.objects.get(id=user_pk)
         users_orders_detail = model.objects.get_total_orders_information(
             user_pk, orders_id
         )
         if users_profile.balance < users_orders_detail['persons_discounted_price']:
-            text = 'You dont have enough money to pay for this order'
-            return text
+            raise errors.LackOfMoneyError("You dont have enough money to pay for this order")
 
         users_profile.balance -= users_orders_detail['persons_discounted_price']
         users_profile.save()
         users_orders.update(
             state='PAID'
         )
-        text = 'The order was been paid successfully'
-        return text
+        return True

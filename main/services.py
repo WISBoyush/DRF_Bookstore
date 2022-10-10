@@ -67,5 +67,4 @@ class GoodsService(ItemsServiceMixin):
         model = self.get_model_name_from_ct(content_type)
         serializer = self.get_dynamic_serializer(model)
 
-
         return serializer

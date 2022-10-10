@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from rents.models import Rent
-from rents.serializers import RentOuterSerializer
+from rents.serializers import RentSerializer
 from rents.services import RentService
 
 
@@ -13,7 +13,7 @@ class BaseOrderViewSet(ModelViewSet):
 
 
 class RentViewSet(BaseOrderViewSet):
-    serializer_class = RentOuterSerializer
+    serializer_class = RentSerializer
     model = Rent
     lookup_url_kwarg = 'rents_id'
     http_method_names = ['patch', 'get', 'post', 'delete']

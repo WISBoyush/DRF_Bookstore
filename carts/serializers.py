@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class CartInnerSerializer(serializers.Serializer):
+class CartItemSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     amount = serializers.IntegerField(required=True)
     state = serializers.CharField(read_only=True)
@@ -17,7 +17,7 @@ class CartInnerSerializer(serializers.Serializer):
     new_price = serializers.IntegerField(read_only=True)
 
 
-class CartOuterSerializer(serializers.Serializer):
+class CartSerializer(serializers.Serializer):
     total = serializers.IntegerField(read_only=False)
     persons_discounted_price = serializers.IntegerField(read_only=False)
-    products = CartInnerSerializer(many=True)
+    products = CartItemSerializer(many=True)

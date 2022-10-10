@@ -4,10 +4,10 @@ from datetime import date, datetime, timedelta
 from rest_framework.response import Response
 
 from carts.models import Purchase
-from carts.serializers import CartInnerSerializer
+from carts.serializers import CartItemSerializer
 from main.models import Item
 from rents.models import Rent
-from rents.serializers import RentInnerSerializer
+from rents.serializers import RentItemSerializer
 
 
 class CartsService:
@@ -16,7 +16,6 @@ class CartsService:
         self.user = user
         self.model = model
         super().__init__(*args, **kwargs)
-
 
     def list(self):
         queryset = self.model.objects.filter(user_id=self.user, state='CART').order_by('id').values()
@@ -34,8 +33,8 @@ class CartsService:
         items_objects = Item.objects.all()
         personal_orders_id = uuid.uuid4()
         orders_time = datetime.now()
-        city = data.get('city', '12345')
-        address = data.get('address', '12345')
+        city = data.get('city')
+        address = data.get('address')
 
         updated_fields = {
             'state': 'AWAITING_PAYMENT',
@@ -69,7 +68,7 @@ class CartsService:
         return returned_data
 
     def cart_update(self, data, user, *args, **kwargs):
-        serializer = CartInnerSerializer(data=data["cart"], many=True)
+        serializer = CartItemSerializer(data=data["cart"], many=True)
 
         if not serializer.is_valid():
             return Response(status=400, data='Fuck off')
@@ -110,7 +109,7 @@ class RentCartsService:
 
     def create(self, data, *args, **kwargs):
 
-        serializer = RentInnerSerializer(data=data)
+        serializer = RentItemSerializer(data=data)
 
         if not serializer.is_valid():
             return Response(status=400, data='Input data is invalid')

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 
-class RentInnerSerializer(serializers.Serializer):
+class RentItemSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     orders_id = serializers.CharField(read_only=True)
     state = serializers.CharField(read_only=True)
@@ -13,6 +13,6 @@ class RentInnerSerializer(serializers.Serializer):
     address = serializers.CharField(required=False)
 
 
-class RentOuterSerializer(serializers.Serializer):
+class RentSerializer(serializers.Serializer):
     orders_id = serializers.CharField(read_only=True)
-    orders = RentInnerSerializer(many=True)
+    orders = RentItemSerializer(many=True)

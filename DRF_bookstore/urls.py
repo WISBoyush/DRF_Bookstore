@@ -42,6 +42,7 @@ urlpatterns = [
     path('api/admin/', admin.site.urls),
     path('api/user/', include('users.urls')),
     path('api/bookstore/', include('main.urls')),
+    path('api/tag/', include('tags.urls')),
     path('api/cart/', include('carts.urls')),
     path('api/rent/', include('rents.urls')),
     path('api/order/', include('orders.urls')),
