@@ -1,6 +1,6 @@
 from django.db.transaction import atomic
 
-from .errors import LackOfMoneyError, AlreadyPaidError
+from orders import errors
 from profiles.models import Profile
 
 
