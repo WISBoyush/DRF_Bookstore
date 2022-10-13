@@ -2,12 +2,15 @@ import uuid
 from datetime import date, datetime, timedelta
 
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 
 from carts.models import Purchase
 from carts.serializers import CartItemSerializer
 from main.models import Item
 from rents.models import Rent
 from rents.serializers import RentItemSerializer
+from carts.errors import UnexpectedItemError
+
 
 
 class CartsService:
@@ -67,11 +70,11 @@ class CartsService:
 
         return returned_data
 
-    def cart_update(self, data, user, *args, **kwargs):
+    def update_cart(self, data, user, *args, **kwargs):
         serializer = CartItemSerializer(data=data["cart"], many=True)
 
         if not serializer.is_valid():
-            return Response(status=400, data='Fuck off')
+            raise ValidationError
 
         data = data["cart"]
         item_in_cart = Purchase.objects.filter(state="CART", user_id=user)
@@ -112,7 +115,7 @@ class RentCartsService:
         serializer = RentItemSerializer(data=data)
 
         if not serializer.is_valid():
-            return Response(status=400, data='Input data is invalid')
+            raise ValidationError
 
         data = serializer.data
         item_in_cart, is_created = Rent.objects.get_or_create(
@@ -122,7 +125,7 @@ class RentCartsService:
         )
 
         if not is_created:
-            return Response(status=400, data="You have not rent more then one item of good")
+            raise UnexpectedItemError("You have not rent more then one item of good")
 
         return item_in_cart
 
