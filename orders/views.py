@@ -45,7 +45,7 @@ class OrderViewSet(BaseOrderViewSet):
             return Response(status=404, data='Not Found')
         try:
             service.pay(self.request.user.pk, orders_id, self.model)
-        except (OrdersError) as e:
+        except OrdersError as e:
             return Response(status=400, data={'message': f'{e}'})
 
         return Response(status=200, data="Order was successfully created")

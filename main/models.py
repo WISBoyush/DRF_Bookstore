@@ -32,6 +32,7 @@ class Item(models.Model):
 
     image = models.ImageField(
         null=True,
+        blank=True,
         upload_to='',
         verbose_name=_('Image')
     )
