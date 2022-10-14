@@ -1,8 +1,7 @@
-from rest_framework import serializers
-from rest_framework.response import Response
-from rest_framework.status import HTTP_403_FORBIDDEN
+from rest_framework import serializers, status
+from rest_framework.exceptions import APIException
 
-from .models import User
+from users.models import User
 
 
 class UserSerializer(serializers.Serializer):  # noqa
@@ -15,13 +14,21 @@ class UserSerializer(serializers.Serializer):  # noqa
     date_joined = serializers.DateTimeField(read_only=True)
     last_login = serializers.DateTimeField(read_only=True)
 
-    def create(self, validated_data):
-        try:
-            user = User.objects.create_user(
-                email=self.initial_data['email'],
-                password=self.initial_data['password'],
+    def validate_email(self, email):
+        if User.objects.filter(email=email).exists():
+            raise APIException(
+                detail="User with this email already exists",
+                code=status.HTTP_400_BAD_REQUEST
             )
-            return user
-        except Exception as e:
-            return Response(status=HTTP_403_FORBIDDEN,
-                            data=f'User authorized under this email already exist \n exception is \"{e}\"')
+        return email
+
+    def create(self, validated_data):
+        # try:
+        user = User.objects.create_user(
+            email=self.initial_data['email'],
+            password=self.initial_data['password'],
+        )
+        return user
+        # except UserException as exception:
+        #     return Response(status=HTTP_400_BAD_REQUEST,
+        #                     data={'message': exception})

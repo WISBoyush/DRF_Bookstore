@@ -5,8 +5,8 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from profiles.models import Profile
-from users.models import User
 from tags.models import Tag
+from users.models import User
 
 
 class Item(models.Model):
@@ -115,13 +115,9 @@ class Book(Item):
         verbose_name=_('Date of release')
     )
 
-    type = 1
-
 
 class Figure(Item):
     manufacturer = models.CharField(
         max_length=50,
         verbose_name=_('Manufacturer')
     )
-
-    type = 2

@@ -1,7 +1,9 @@
 import rest_framework.pagination
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.status import HTTP_401_UNAUTHORIZED
 
@@ -11,9 +13,8 @@ from .serializers import (
     BookSerializer,
     FigureSerializer,
     BaseDynamicSerializer,
-    ItemsByCategorySerializer
+    ItemsByCategorySerializer, TagsDetailSerializer
 )
-
 from .services import ItemsService
 from .utils import get_4xx_or_error_message_json
 
@@ -61,7 +62,7 @@ class ItemViewSet(BaseViewSet):
     serializer_class = ItemSerializer
     model = Item
     queryset = model.objects.all()
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
 
     filter_backends = [
         filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter
@@ -75,17 +76,15 @@ class ItemViewSet(BaseViewSet):
     def retrieve(self, request, *args, **kwargs):
         item = self.model.objects.filter(id=kwargs.get('pk'))
         instance = item.first()
-        items_values = list(item.values())[0]
+        items_values = list(item)[0]
         category = ContentType.objects.get(id=instance.content_type_id).model
         item_info = {
             'category': category,
             'item': items_values
         }
-        serializer = ItemsByCategorySerializer(data=item_info)
+        serializer = ItemsByCategorySerializer(item_info)
 
-        if serializer.is_valid(raise_exception=True):
-            return Response(status=200, data=serializer.data)
-        return None
+        return Response(status=200, data=serializer.data)
 
     def list(self, request, *args, **kwargs):
         service = ItemsService()
@@ -96,8 +95,17 @@ class ItemViewSet(BaseViewSet):
         return Response(status=200, data=serializer.data)
 
 
-class BaseItemActionsViewSet(ItemViewSet):
-    http_method_names = ['get', 'post']
+class BaseItemActionsViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        return self.model.objects.all()
+
+    http_method_names = ['get', 'post', 'patch']
+
+    def retrieve(self, request, *args, **kwargs):
+        item = self.model.objects.get(id=kwargs.get('pk'))
+        serializer = self.serializer_class(item)
+
+        return Response(status=200, data=serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer_class = self.get_serializer(request, self.request.user.pk)
@@ -111,6 +119,23 @@ class BaseItemActionsViewSet(ItemViewSet):
         queryset = self.model.objects.all()
         serialized_items = self.serializer_class(list(queryset), many=True)
         return Response(status=200, data=serialized_items.data)
+
+    @action(detail=True, methods=['patch'], url_name='update_item')
+    def update_item(self, request, *args, **kwargs):
+        validated_data = self.serializer_class(data=request.data)
+        validated_data.is_valid(raise_exception=True)
+        validated_data = validated_data.data
+        instance = self.get_object()
+
+        tags_ids = validated_data.pop("tags") if "tags" in validated_data else None
+        for key, value in validated_data.items():
+            setattr(instance, key, value)
+        if tags_ids:
+            instance.tags.set(tags_ids)
+        instance.save()
+
+        return Response(self.serializer_class(instance).data)
+
 
 
 class BookViewSet(BaseItemActionsViewSet):

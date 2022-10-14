@@ -1,16 +1,14 @@
 import uuid
 from datetime import date, datetime, timedelta
 
-from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 
+from carts.errors import UnexpectedItemError
 from carts.models import Purchase
 from carts.serializers import CartItemSerializer
 from main.models import Item
 from rents.models import Rent
 from rents.serializers import RentItemSerializer
-from carts.errors import UnexpectedItemError
-
 
 
 class CartsService:

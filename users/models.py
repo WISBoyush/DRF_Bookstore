@@ -6,7 +6,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from DRF_bookstore import settings
-from .managers import UserManager
+from users.managers import UserManager
 
 
 class User(AbstractUser):

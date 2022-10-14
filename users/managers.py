@@ -1,4 +1,6 @@
 from django.contrib.auth.models import UserManager as BaseUserManager
+from users.errors import DuplicateUserException
+import users.models
 
 
 class UserManager(BaseUserManager):
@@ -26,5 +28,7 @@ class UserManager(BaseUserManager):
     def create_user(self, email=None, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", False)
         extra_fields.setdefault("is_superuser", False)
-
+        user = users.models.User.objects.filter(email=email)
+        if user.exists():
+            raise DuplicateUserException("User with this email already exists")
         return self._create_user(email, password, **extra_fields)

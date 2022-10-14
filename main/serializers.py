@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 from tags.models import Tag
 from tags.serializers import TagSerializer
-from .models import Book, Figure
 
 
 class ItemSerializer(serializers.Serializer):
@@ -11,9 +10,9 @@ class ItemSerializer(serializers.Serializer):
     title = serializers.CharField(required=False)
     description = serializers.CharField(required=False)
     price = serializers.IntegerField(required=False)
-    image = serializers.CharField(required=False)
+    image = serializers.CharField(required=False, allow_blank=True)
     content_type_id = serializers.IntegerField(required=False)
-    tags = serializers.PrimaryKeyRelatedField(many=True, allow_empty=False, read_only=True, required=False)
+    tags = serializers.ListSerializer(child=serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all()))
 
 
 class ItemsByCategorySerializer(serializers.Serializer):
@@ -25,19 +24,18 @@ class BaseDynamicSerializer(serializers.ModelSerializer):
     pass
 
 
-class FigureSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Figure
-        fields = '__all__'
-    # manufacturer = serializers.CharField(required=False)
+class TagsDetailSerializer(TagSerializer):
+    pass
 
 
-class BookSerializer(serializers.ModelSerializer):
+class BaseGoodSerializer(ItemSerializer):
+    pass
 
 
-    class Meta:
-        model = Book
-        fields = '__all__'
-#     author = serializers.CharField(required=False)
-#     date_of_release = serializers.DateField(required=False)
+class FigureSerializer(BaseGoodSerializer):
+    manufacturer = serializers.CharField(required=False)
 
+
+class BookSerializer(BaseGoodSerializer):
+    author = serializers.CharField(required=False)
+    date_of_release = serializers.DateField(required=False)

@@ -30,3 +30,10 @@ class ItemsService(ItemsServiceMixin):
                 'category': category,
                 'item': item
             }
+
+    def update_tags(self, tags_changes, model, **kwargs):
+        instance = model.objects.get(id=kwargs.get('pk'))
+        instance.tags.set(tags_changes)
+
+        instance.save()
+

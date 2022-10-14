@@ -6,8 +6,6 @@ from profiles.models import Profile
 
 class PurchaseManager(models.Manager):
 
-    # Common.
-
     # FOR Cart.
 
     def get_personal_discount(self, user_pk):
