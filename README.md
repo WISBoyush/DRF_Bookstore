@@ -1059,3 +1059,163 @@ information about a token's fitness for a particular use.
 | Code | Description |
 | ---- | ----------- |
 | 204 |  |
+
+### Models
+
+
+#### Book
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| quantity | integer |  | No |
+| title | string |  | No |
+| description | string |  | No |
+| price | integer |  | No |
+| image | string |  | No |
+| content_type_id | integer |  | No |
+| tags | [ integer ] |  | Yes |
+| author | string |  | No |
+| date_of_release | date |  | No |
+
+#### Figure
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| quantity | integer |  | No |
+| title | string |  | No |
+| description | string |  | No |
+| price | integer |  | No |
+| image | string |  | No |
+| content_type_id | integer |  | No |
+| tags | [ integer ] |  | Yes |
+| manufacturer | string |  | No |
+
+#### CartItem
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| amount | integer |  | Yes |
+| state | string |  | No |
+| item_id | integer |  | Yes |
+| user_id | integer |  | No |
+| warranty_days | integer |  | No |
+| orders_id | string |  | No |
+| orders_time | dateTime |  | No |
+| city | string |  | No |
+| address | string |  | No |
+| total_orders_price | integer |  | No |
+| price_discounted | integer |  | No |
+| new_price | integer |  | No |
+
+#### Cart
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| total | integer |  | Yes |
+| persons_discounted_price | integer |  | Yes |
+| products | [ [CartItem](#CartItem) ] |  | Yes |
+
+#### RentItem
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| orders_id | string |  | No |
+| state | string |  | No |
+| item_id | integer |  | No |
+| user_id | integer |  | No |
+| rented_from | date |  | No |
+| rented_to | date |  | No |
+| city | string |  | No |
+| address | string |  | No |
+
+#### OrderInner
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| amount | integer |  | Yes |
+| state | string |  | No |
+| item_id | integer |  | Yes |
+| user_id | integer |  | No |
+| warranty_days | integer |  | No |
+| orders_id | string |  | No |
+| orders_time | dateTime |  | No |
+| city | string |  | No |
+| address | string |  | No |
+| total_orders_price | integer |  | No |
+| price_discounted | integer |  | No |
+| new_price | integer |  | No |
+
+#### OrderOuter
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| orders_id | string |  | No |
+| total | integer |  | Yes |
+| persons_discounted_price | integer |  | Yes |
+| products | [ [OrderInner](#OrderInner) ] |  | Yes |
+
+#### Rent
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| orders_id | string |  | No |
+| orders | [ [RentItem](#RentItem) ] |  | Yes |
+
+#### Tag
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| tag_title | string |  | No |
+| tag_description | string |  | No |
+| discount | integer |  | No |
+
+#### TokenObtainPair
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| email | string |  | Yes |
+| password | string |  | Yes |
+
+#### TokenRefresh
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| refresh | string |  | Yes |
+| access | string |  | No |
+
+#### TokenVerify
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| token | string |  | Yes |
+
+#### User
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| email | string |  | No |
+| password | string |  | No |
+| is_active | boolean |  | No |
+| is_superuser | boolean |  | No |
+| is_staff | boolean |  | No |
+| date_joined | dateTime |  | No |
+| last_login | dateTime |  | No |
+
+#### Profile
+
+| Name | Type | Description | Required |
+| ---- | ---- | ----------- | -------- |
+| id | integer |  | No |
+| user_id | integer |  | No |
+| first_name | string |  | No |
+| last_name | string |  | No |
+| bio | string |  | No |
+| phone | string |  | No |
+| balance | integer |  | No |
+| person_disc | integer |  | No |
