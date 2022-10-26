@@ -10,5 +10,5 @@ api_router.register(r'', UserViewSet, basename='users_user')
 #
 urlpatterns = [
     path('', include(api_router.urls)),
-    path('<int:pk>/profile/', include('profiles.urls'))
+    path('<int:pk>/profile/', include('profiles.urls'), name='user_profile_list')
 ]

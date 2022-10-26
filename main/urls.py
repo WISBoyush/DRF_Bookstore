@@ -3,6 +3,8 @@ from rest_framework import routers
 
 from .views import ItemViewSet, BookViewSet, FigureViewSet
 
+routers.DynamicRoute
+
 item_router = routers.DefaultRouter()
 item_router.register(r'', ItemViewSet, basename='main_item')
 

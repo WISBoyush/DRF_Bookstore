@@ -15,6 +15,7 @@ class OrderInnerSerializer(serializers.Serializer):
     total_orders_price = serializers.IntegerField(read_only=True)
     price_discounted = serializers.IntegerField(read_only=True)
     new_price = serializers.IntegerField(read_only=True)
+    serializers.ChoiceField
 
 
 class OrderOuterSerializer(serializers.Serializer):

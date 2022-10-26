@@ -1,6 +1,4 @@
-import rest_framework.pagination
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import QuerySet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
@@ -9,11 +7,10 @@ from rest_framework.status import HTTP_401_UNAUTHORIZED
 
 from .models import Item, Figure, Book
 from .serializers import (
-    ItemSerializer,
     BookSerializer,
     FigureSerializer,
     BaseDynamicSerializer,
-    ItemsByCategorySerializer, TagsDetailSerializer
+    ItemsByCategorySerializer, ItemSerializer
 )
 from .services import ItemsService
 from .utils import get_4xx_or_error_message_json
@@ -41,18 +38,18 @@ class BaseViewSet(viewsets.ModelViewSet):
             })
              })
 
-    def get_serializer(self, request, user_pk, *args, **kwargs):
-        if not request.user.is_superuser:
-            return get_4xx_or_error_message_json(status=HTTP_401_UNAUTHORIZED, message="You have not permission")
-        content_type = int(request.data.get('content_type'))
-
-        if content_type not in [8, 9]:
-            raise ValueError
-
-        model = self.get_model_name_from_ct(content_type)
-        serializer = self.get_dynamic_serializer(model)
-
-        return serializer
+    # def get_serializer(self, request, user_pk, *args, **kwargs):
+    #     if not request.user.is_superuser:
+    #         return get_4xx_or_error_message_json(status=HTTP_401_UNAUTHORIZED, message="You have not permission")
+    #     content_type = int(request.data.get('content_type'))
+    #
+    #     if content_type not in [8, 9]:
+    #         raise ValueError
+    #
+    #     model = self.get_model_name_from_ct(content_type)
+    #     serializer = self.get_dynamic_serializer(model)
+    #
+    #     return serializer
 
     def get_queryset(self):
         return self.model.objects.all()
@@ -61,15 +58,14 @@ class BaseViewSet(viewsets.ModelViewSet):
 class ItemViewSet(BaseViewSet):
     serializer_class = ItemSerializer
     model = Item
-    queryset = model.objects.all()
-    http_method_names = ['get', 'post']
-
     filter_backends = [
         filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter
     ]
-    filterset_fields = ['title', 'price']
-    search_fields = ['title', 'description']
-    pagination_class = rest_framework.pagination.PageNumberPagination
+    queryset = model.objects.all()
+    http_method_names = ['get']
+    filterset_fields = ['title', 'price', 'tags']
+    search_fields = ['title']
+    # pagination_class = rest_framework.pagination.PageNumberPagination
 
     ordering_fields = ['title', 'price']
 
@@ -88,8 +84,9 @@ class ItemViewSet(BaseViewSet):
 
     def list(self, request, *args, **kwargs):
         service = ItemsService()
-
-        items_info = list(service.extend_items_info())
+        items_info = list(service.extend_items_info(
+            queryset=self.filter_queryset(queryset=self.queryset))
+        )
         serializer = ItemsByCategorySerializer(items_info, many=True)
 
         return Response(status=200, data=serializer.data)
@@ -108,11 +105,16 @@ class BaseItemActionsViewSet(viewsets.ModelViewSet):
         return Response(status=200, data=serializer.data)
 
     def create(self, request, *args, **kwargs):
-        serializer_class = self.get_serializer(request, self.request.user.pk)
+        # serializer_class = self.get_serializer_class(request, self.request.user.pk)
 
-        serializer = serializer_class(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        data_to_create = serializer.data
+        tags = data_to_create.pop('tags')
+        new_item = self.model.objects.create(**data_to_create)
+        new_item.tags.set(tags)
+        new_item.save()
+
         return Response(status=201, data=serializer.data)
 
     def list(self, request, *args, **kwargs):
@@ -122,9 +124,11 @@ class BaseItemActionsViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['patch'], url_name='update_item')
     def update_item(self, request, *args, **kwargs):
-        validated_data = self.serializer_class(data=request.data)
-        validated_data.is_valid(raise_exception=True)
-        validated_data = validated_data.data
+        if not self.request.user.is_superuser:
+            return Response(status=403, data='User has not any permissions')
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        validated_data = serializer.data
         instance = self.get_object()
 
         tags_ids = validated_data.pop("tags") if "tags" in validated_data else None
@@ -135,7 +139,6 @@ class BaseItemActionsViewSet(viewsets.ModelViewSet):
         instance.save()
 
         return Response(self.serializer_class(instance).data)
-
 
 
 class BookViewSet(BaseItemActionsViewSet):

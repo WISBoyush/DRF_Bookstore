@@ -6,6 +6,7 @@ from users.models import User
 
 class UserSerializer(serializers.Serializer):  # noqa
 
+    id = serializers.IntegerField(read_only=True)
     email = serializers.CharField(required=False)
     password = serializers.CharField(required=False)
     is_active = serializers.BooleanField(required=False)
@@ -23,12 +24,8 @@ class UserSerializer(serializers.Serializer):  # noqa
         return email
 
     def create(self, validated_data):
-        # try:
-        user = User.objects.create_user(
+        user = User.objects.user(
             email=self.initial_data['email'],
             password=self.initial_data['password'],
         )
         return user
-        # except UserException as exception:
-        #     return Response(status=HTTP_400_BAD_REQUEST,
-        #                     data={'message': exception})

@@ -1,3 +1,4 @@
+import rest_framework.permissions
 from rest_framework import viewsets
 from rest_framework.decorators import action
 
@@ -14,7 +15,8 @@ class BaseViewSet(viewsets.ModelViewSet):
 class UserViewSet(BaseViewSet):
     serializer_class = UserSerializer
     model = User
-    http_method_names = ['get', 'post', ]
+    http_method_names = ['get', 'post', 'patch']
+    permission_classes = [rest_framework.permissions.AllowAny, ]
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)

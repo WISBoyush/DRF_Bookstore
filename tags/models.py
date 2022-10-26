@@ -10,7 +10,7 @@ class Tag(models.Model):
     )
 
     tag_description = models.CharField(
-        max_length=100,
+        max_length=400,
         verbose_name=_("Tag's description")
     )
 

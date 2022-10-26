@@ -19,8 +19,8 @@ class CartsService:
         super().__init__(*args, **kwargs)
 
     def list(self):
-        queryset = self.model.objects.filter(user_id=self.user, state='CART').order_by('id').values()
-        returned_data = self.model.objects.get_total_products_information(self.user, ['CART'])
+        queryset = self.model.objects.filter(user_id=self.user.pk, state='CART').order_by('id').values()
+        returned_data = self.model.objects.get_total_products_information(self.user.pk, ['CART'])
 
         for index, product in enumerate(returned_data['products']):
             product.update(queryset[index])
@@ -28,9 +28,11 @@ class CartsService:
         return returned_data
 
     def make_order(self, data, model):
-        items_to_update = Purchase.objects.filter(user_id=self.user, state='CART')
+        items_to_update = Purchase.objects.filter(user_id=self.user.pk, state='CART')
+        if not items_to_update.exists():
+            raise UnexpectedItemError("User can not make an order from empty cart")
 
-        total_orders_price = model.objects.get_total_products_information(self.user, ['CART'])
+        total_orders_price = model.objects.get_total_products_information(self.user.pk, ['CART'])
         items_objects = Item.objects.all()
         personal_orders_id = uuid.uuid4()
         orders_time = datetime.now()
@@ -60,7 +62,7 @@ class CartsService:
         updated_datas = Purchase.objects.filter(**updated_fields).values()
 
         returned_data = Purchase.objects.get_total_orders_information(
-            self.user, orders_id=updated_fields['orders_id']
+            self.user.pk, orders_id=updated_fields['orders_id']
         )
 
         for index, product in enumerate(returned_data['products']):
@@ -68,14 +70,12 @@ class CartsService:
 
         return returned_data
 
-    def update_cart(self, data, user, *args, **kwargs):
+    def update_cart(self, data, *args, **kwargs):
         serializer = CartItemSerializer(data=data["cart"], many=True)
-
-        if not serializer.is_valid():
-            raise ValidationError
+        serializer.is_valid(raise_exception=True)
 
         data = data["cart"]
-        item_in_cart = Purchase.objects.filter(state="CART", user_id=user)
+        item_in_cart = Purchase.objects.filter(state="CART", user_id=self.user.pk)
         returned_data = []
 
         for item in data:
@@ -91,7 +91,7 @@ class CartsService:
             found_item, is_created = Purchase.objects.get_or_create(
                 state='CART',
                 item_id=item['item_id'],
-                user_id=self.user,
+                user_id=self.user.pk,
                 warranty_days=14
             )
 
@@ -106,20 +106,18 @@ class RentCartsService:
     def __init__(self, user, model, *args, **kwargs):
         self.user = user
         self.model = model
-        super().__init__(*args, **kwargs)
 
     def create(self, data, *args, **kwargs):
 
         serializer = RentItemSerializer(data=data)
 
-        if not serializer.is_valid():
-            raise ValidationError
+        serializer.is_valid(raise_exception=True)
 
         data = serializer.data
         item_in_cart, is_created = Rent.objects.get_or_create(
             state='CART',
             item_id=data['item_id'],
-            user_id=self.user
+            user_id=self.user.pk
         )
 
         if not is_created:
@@ -128,11 +126,11 @@ class RentCartsService:
         return item_in_cart
 
     def make_order(self, data):
-        items_to_update = Rent.objects.filter(user_id=self.user, state='CART')
+        items_to_update = Rent.objects.filter(user_id=self.user.pk, state='CART')
         items_objects = Item.objects.all()
         personal_orders_id = uuid.uuid4()
-        city = data.get('city', '12345')
-        address = data.get('address', '12345')
+        city = data.get('city')
+        address = data.get('address')
         updated_fields = {
             'state': 'AWAITING_DELIVERY',
             'orders_id': personal_orders_id,

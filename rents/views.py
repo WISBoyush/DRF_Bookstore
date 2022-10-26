@@ -26,12 +26,12 @@ class RentViewSet(BaseOrderViewSet):
 
         return Response(status=200, data=serializer.data)
 
-    @action(detail=False, methods=['get'], url_path="detail")
+    @action(detail=False, methods=['get'], url_name="detail")
     def list_detail(self, request, *args, **kwargs):
         service = RentService()
-        orders_id = self.request.data.get('orders_id')
+        orders_id = self.request.query_params.get('orders_id')
         if not orders_id:
-            return Response(status=404, data='Not Found')
+            return Response(status=404, data='This order is not Found')
         returned_data = service.list_detail(orders_id, self.model, self.request.user.pk)
         serializer = self.serializer_class(returned_data, many=False)
         return Response(status=200, data=serializer.data)

@@ -18,19 +18,15 @@ class ItemSerializer(serializers.Serializer):
 class ItemsByCategorySerializer(serializers.Serializer):
     category = serializers.ChoiceField(choices=[('book', 'book'), ('figure', 'figure')])
     item = ItemSerializer()
+    anything = serializers.Field
 
 
 class BaseDynamicSerializer(serializers.ModelSerializer):
     pass
 
 
-class TagsDetailSerializer(TagSerializer):
-    pass
-
-
 class BaseGoodSerializer(ItemSerializer):
     pass
-
 
 class FigureSerializer(BaseGoodSerializer):
     manufacturer = serializers.CharField(required=False)

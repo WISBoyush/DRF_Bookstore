@@ -14,7 +14,8 @@ class TagSerializer(serializers.Serializer):  # noqa
     discount = serializers.IntegerField(read_only=False, required=False)
 
     def validate_tag_title(self, tag_title):
-        method = self.context['request'].stream.method
+        print(self.context)
+        method = self.context.stream.method
         if Tag.objects.filter(tag_title=tag_title).exists() and method == 'POST':
             raise APIException(
                 detail="Tag with this title already exists",

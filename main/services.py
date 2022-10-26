@@ -22,8 +22,8 @@ class ItemsServiceMixin:
 
 class ItemsService(ItemsServiceMixin):
 
-    def extend_items_info(self):
-        items = Item.objects.all()
+    def extend_items_info(self, queryset):
+        items = queryset
         for item in items:
             category = ContentType.objects.get(id=item.content_type_id).model
             yield {

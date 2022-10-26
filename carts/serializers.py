@@ -13,9 +13,9 @@ class CartItemSerializer(serializers.Serializer):
     orders_time = serializers.DateTimeField(read_only=True)
     city = serializers.CharField(required=False)
     address = serializers.CharField(required=False)
-    total_orders_price = serializers.IntegerField(read_only=True)
-    price_discounted = serializers.IntegerField(read_only=True)
-    new_price = serializers.IntegerField(read_only=True)
+    total_orders_price = serializers.IntegerField(read_only=True, required=False)
+    price_discounted = serializers.IntegerField(read_only=True, required=False)
+    new_price = serializers.IntegerField(read_only=True, required=False)
 
 
 class CartSerializer(serializers.Serializer):
