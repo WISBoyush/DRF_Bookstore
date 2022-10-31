@@ -132,3 +132,4 @@ dmypy.json
 
 # MacOS
 *.DS_Store
+!/pytest.ini

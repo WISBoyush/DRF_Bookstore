@@ -15,9 +15,6 @@ from tags.models import Tag
 from users.models import User
 
 
-# pytestmark = pytest.mark.django_db
-
-
 class TagFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Tag
@@ -35,7 +32,6 @@ class ProductFactory(factory.django.DjangoModelFactory):
     description = factory.Faker('text')
     price = random.randint(100, 400)
     image = factory.Faker('sentence', nb_words=2)
-    # tags = factory.SubFactory(TagFactory)
     quantity = random.randint(200, 300)
     content_type = factory.Iterator(ContentType.objects.all())
 

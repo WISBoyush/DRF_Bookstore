@@ -9,9 +9,6 @@ from rents.models import Rent
 from users.models import User
 
 
-# from .factories import OrderFactory
-
-
 class TestUnitCart(unittest.TestCase):
     def setUp(self) -> None:
         self.user = User.objects.get(email='test@test.test')
@@ -20,9 +17,10 @@ class TestUnitCart(unittest.TestCase):
 
     @pytest.mark.django_db
     def test_cart_list(self):
+        cart = self.model.objects.filter(user_id=self.user.pk, state="CART").order_by('id')
         self.assertEqual(
-            len(self.service.list()['products']),
-            2
+            [tuple(item.values())[0:-2] for item in self.service.list()['products']],
+            list(cart.values_list())
         )
 
     @pytest.mark.django_db
@@ -63,14 +61,20 @@ class TestUnitCart(unittest.TestCase):
         }
 
         self.service.update_cart(data=payload, user=self.user)
-        updated_items = list(
-            Purchase.objects.filter(
-                item_id__in=list(item["item_id"] for item in payload["cart"][0:-1]),
-                user_id=self.user.pk,
-                state="CART"
-            ).values('amount', 'item_id').order_by('item_id'))
+        updated_items = Purchase.objects.filter(
+            item_id__in=list(item["item_id"] for item in payload["cart"][0:-1]),
+            user_id=self.user.pk,
+            state="CART"
+        )
 
-        self.assertEqual(updated_items, payload["cart"][0:-1])
+        self.assertEqual(
+            list(
+                updated_items.values('amount', 'item_id').order_by('item_id')
+            ),
+            payload["cart"][0:-1]
+        )
+
+        self.assertFalse(updated_items.filter(item_id=1).exists())
 
         # Alternative version
 

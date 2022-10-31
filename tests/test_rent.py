@@ -27,5 +27,3 @@ class TestRent:
         assert Rent.objects.filter(
             user_id=user.pk, state="AWAITING_DELIVERY"
         ).values('orders_id').first()['orders_id'] == response.data['orders_id']
-
-    

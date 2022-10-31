@@ -11,14 +11,12 @@ class TestMain:
         assert response.status_code == 200
         assert response.data != []
 
-
     @pytest.mark.django_db
     def test_book_list(self, api_client, user):
         url = '/api/bookstore/book/'
         response = api_client.get(url)
         assert response.status_code == 200
         assert response.data != []
-
 
     @pytest.mark.django_db
     def test_figure_list(self, api_client, user):
@@ -33,7 +31,6 @@ class TestMain:
         response = api_client.get(url)
         assert response.status_code == 200
         assert response.data.get('title') == 'Item 0'
-
 
     @pytest.mark.django_db
     def test_figure_detail(self, api_client, user):
@@ -69,8 +66,8 @@ class TestMain:
             'author': 'Менделеев',
             'date_of_release': '2022-08-09',
             'tags': [
-            1, 2
-        ],
+                1, 2
+            ],
         }
         response = api_client.post(url, item, format='json')
         assert response.status_code == 201
@@ -102,8 +99,3 @@ class TestMain:
         response = api_client.patch(url, item, format='json')
         assert response.status_code == 200
         assert response.data.get('title') == 'Неалхимия'
-
-
-
-
-

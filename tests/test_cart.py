@@ -77,5 +77,3 @@ class TestCart:
         )
         assert response.status_code == 200
         assert Rent.objects.filter(user_id=user.pk, item_id=6, state='AWAITING_DELIVERY').exists()
-
-

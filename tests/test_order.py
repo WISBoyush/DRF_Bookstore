@@ -1,10 +1,7 @@
 import pytest
-
-from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from carts.models import Purchase
-from .utils import do_as_superuser
 
 
 class TestOrder:
@@ -42,8 +39,6 @@ class TestOrder:
         response = api_client.post(url, {'orders_id': order_item.orders_id})
         assert response.data['message'] == 'You dont have enough money to pay for this order'
 
-
-
     @pytest.mark.gjango_db
     def test_order_pay_with_balance(self, api_client, user, superuser):
         order_item = Purchase.objects.filter(user_id=user.pk, state='AWAITING_PAYMENT').first()
@@ -57,4 +52,3 @@ class TestOrder:
         api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {refresh.access_token}')
         response = api_client.post(url, {'orders_id': order_item.orders_id})
         assert response.data == 'Order was successfully paid'
-

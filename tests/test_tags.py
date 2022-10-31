@@ -26,7 +26,6 @@ class TestTag:
 
         response = api_client.patch(url, {"tag_title": "Test title"}, follow=True)
         assert response.status_code == 403
-        # assert Tag.objects.get(id=1).tag_title == "Test title"
 
     @pytest.mark.django_db
     def test_tag_change_tag_su(self, api_client, superuser):
@@ -35,4 +34,3 @@ class TestTag:
         response = api_client.patch(url, {"tag_title": "Test title"}, format='json', follow=True)
         assert response.status_code == 200
         assert Tag.objects.get(id=1).tag_title == "Test title"
-
