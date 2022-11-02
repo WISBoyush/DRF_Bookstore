@@ -1,3 +1,5 @@
+from django.db import transaction
+from django.db.transaction import atomic
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -10,6 +12,8 @@ from rents.models import Rent
 from rents.serializers import RentSerializer, RentItemSerializer
 from .errors import UnexpectedItemError
 from .services import CartsService, RentCartsService
+
+from orders.tasks import order_created
 
 
 class BaseViewSet(viewsets.ModelViewSet):
@@ -44,6 +48,7 @@ class CartViewSet(BaseViewSet):
         return Response(status=200, data=serialized_datas)
 
     @action(detail=False, methods=['post'], url_path='make_order')
+    @transaction.atomic()
     def make_order(self, request, *args, **kwargs):
         service = CartsService(self.request.user, self.model)
         try:
@@ -52,6 +57,13 @@ class CartViewSet(BaseViewSet):
             )
         except UnexpectedItemError as e:
             return Response(status=400, data=e)
+        else:
+            print(f"/////////////////////////////////////////////////////////////\n"
+                  f"{returned_data['products'][0]['orders_id']}\n"
+                  f"/////////////////////////////////////////////////////////////")
+            order_created.delay(
+                order_id=returned_data['products'][0]['orders_id']
+            )
 
         serialized_datas = self.serializer_class(returned_data, many=False)
 

@@ -24,7 +24,7 @@ class UserSerializer(serializers.Serializer):  # noqa
         return email
 
     def create(self, validated_data):
-        user = User.objects.user(
+        user = User.objects.create_user(
             email=self.initial_data['email'],
             password=self.initial_data['password'],
         )

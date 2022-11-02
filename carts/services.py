@@ -29,6 +29,9 @@ class CartsService:
 
     def make_order(self, data, model):
         items_to_update = Purchase.objects.filter(user_id=self.user.pk, state='CART')
+        print(f'//////////////////////////////////////////////////////////////////////////\n'
+              f'{items_to_update.exists()}\n'
+              f'//////////////////////////////////////////////////////////////////////////')
         if not items_to_update.exists():
             raise UnexpectedItemError("User can not make an order from empty cart")
 
@@ -40,7 +43,6 @@ class CartsService:
         address = data.get('address')
 
         updated_fields = {
-            'state': 'AWAITING_PAYMENT',
             'orders_id': personal_orders_id,
             'orders_time': orders_time,
             'city': city,
@@ -55,9 +57,11 @@ class CartsService:
                 instance.quantity -= item.amount
                 instance.save()
 
+            updated_fields['state'] = 'AWAITING_PAYMENT'
             items_to_update.update(**updated_fields)
         else:
-            items_to_update.update(state='AWAITING_ARRIVAL')
+            updated_fields['state'] = 'AWAITING_ARRIVAL'
+            items_to_update.update(**updated_fields)
 
         updated_datas = Purchase.objects.filter(**updated_fields).values()
 
