@@ -11,8 +11,8 @@ def order_created(order_id):
     if order:
         return send_mail('Order nr. {}'.format(order_id),
                          'Dear {},\n\n'
-                         'Your order has been successfully processed and is awaiting payment'
-                         'Your order\'s link is http://127.0.0.1:8000/cart/order/payment/{} .'
+                         'Your order has been successfully created'
+                         'Your order\'s link is http://127.0.0.1:1337/api/order/detail/?orders_id={} .'
                          .format(order.user.email,
                                  order_id),
                          EMAIL_HOST_USER,

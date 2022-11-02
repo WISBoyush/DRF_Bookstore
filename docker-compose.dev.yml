@@ -1,0 +1,48 @@
+version: '3.7'
+services:
+  db:
+    container_name: shop_db
+    image: postgres:latest
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env.dev
+    ports:
+      - '5432:5432'
+  nginx:
+    container_name: shop_nginx
+    build: ./nginx
+    volumes:
+      - ./static:/code/static
+      - ./media:/code/media
+    ports:
+      - '1337:80'
+    depends_on:
+      - web
+  web:
+    container_name: shop
+    build: .
+    command: bash entrypoint.sh
+    volumes:
+      - .:/code
+    ports:
+      - '8000:8000'
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
+  redis:
+    container_name: shop_redis
+    ports:
+      - "6379:6379"
+    image: redis
+  celery:
+    container_name: shop_celery
+    command: celery -A DRF_bookstore worker -l INFO
+    build: .
+    env_file:
+      - .env.dev
+    depends_on:
+      - redis
+      - db
+      - web
